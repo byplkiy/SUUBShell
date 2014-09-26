@@ -1,0 +1,65 @@
+#!/bin/bash
+
+function phelp {
+    echo "Usage: cleansvn [-hld] [directory_name]"
+    echo "    -h: Help"
+    echo "    -l: List svn files"
+    echo "    -d: Delete svn files"
+}
+
+curDir=`pwd`
+realrm=0
+if [ $# = 1 ]; then
+    if [ $1 = "-h" ]; then
+        phelp
+        exit
+    elif [ $1 = "-l" ]; then
+        realrm=0
+    elif [ $1 = "-d" ]; then
+        realrm=1
+    else
+        curDir=$1
+    fi
+
+elif [ $# = 2 ]; then
+    curDir=$2;
+    if [ $1 = "-d" ]; then
+        realrm=1
+    elif [ $1 = "-l" ]; then
+        realrm=0
+    elif [ $1 = "-h" ]; then
+        phelp
+        exit
+    else
+        phelp
+        exit
+    fi
+fi
+
+echo "Svn files under $curDir:"
+echo ""
+
+tmpfile=.foundedsvndirlist
+
+find $curDir -name ".svn" > $tmpfile
+
+cnt=0
+while read line; do
+    if [ $realrm = 1 ]; then
+        echo "remove $line"
+        rm -rf $line
+    else
+        echo $line
+    fi
+    cnt=$[cnt+1]
+done < $tmpfile
+
+rm -f $tmpfile
+
+echo $cnt .svn directories found.
+if [ $realrm = 1 ]; then
+    echo "All delted."
+fi
+echo "Done"
+echo ""
+

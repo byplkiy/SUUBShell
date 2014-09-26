@@ -1,0 +1,29 @@
+#!/bin/bash
+
+argc=$#
+
+if [ $argc -ne 1 ]; then
+    echo "Usage: $0 target_binary_or_lib_file"
+    exit
+fi
+
+target=$1
+
+echo ""
+echo "Dependencies:"
+echo ""
+ldd $target
+
+echo ""
+echo "Details: "
+echo ""
+
+for symbol in $(nm -D $target | grep "U " | cut -b12-); do
+    for library in $(ldd $target | cut -d ' ' -f3- | cut -d' ' -f1); do
+        for lib_symbol in $(nm -D $library | grep "T " | cut -b12-); do
+            if [ $symbol == $lib_symbol ]; then 
+                echo -e "Found symbol: \e[1;36m$symbol\033[0m at \e[1;34m$library\033[0m" 
+            fi
+        done
+    done
+done
