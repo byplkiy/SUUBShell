@@ -1,0 +1,27 @@
+#!/bin/bash
+
+mysqluser="user"
+mysqlpass="password"
+mysqldb="database_name"
+BAKDIR="~/AUTOBAK/MySQL/" #backup directory
+
+tstamp=`date +%Y%m%d_%H%M%S`
+fname=$mysqldb"_"$tstamp".sql"
+echo "Back up to $fname ... "
+
+mysqldump -u $mysqluser -p$mysqlpass $mysqldb > $fname 
+
+if [[ -s $fname ]]; then
+    echo "OK."
+    echo "Compressing..."
+    gzip $fname
+    echo "OK."
+    zname="$fname.gz"
+    mv $zname $BAKDIR
+    echo "Moved to $BAKDIR"
+    echo "DONE."
+else
+    rm -f $fname
+    echo "Back up FAILED."
+fi
+
