@@ -1,0 +1,40 @@
+#!/bin/bash
+
+function phelp {
+    echo "Usage: gbk2utf8 -h            Help"
+    echo "       gbk2utf8 -f filename   Convert a file from encoding GBK to UTF8"
+    #echo "       gbk2utf8 -d directory  Convert all files under directory from GBK to UTF8"
+}
+
+curDir=`pwd`
+filename=''
+realrm=0
+if [ $# = 0 ]; then
+    phelp
+    exit
+elif [ $# = 1 ]; then
+    if [ $1 = "-h" ]; then
+        phelp
+        exit
+    else
+        phelp
+        exit
+    fi
+
+elif [ $# = 2 ]; then
+    if [ $1 = "-f" ]; then
+        filename=$2
+        echo "Converting $2 from GBK to UTF8"
+        filenameu8=.$filename.utf8
+        iconv --f GBK $filename --t UTF8 > $filenameu8
+        rm -f $filename
+        mv $filenameu8 $filename
+        echo "Done."
+    else
+        phelp
+        exit
+    fi
+fi
+
+exit
+
